@@ -6,4 +6,8 @@
     <RootNamespace>Demo_Project</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\PileSynth\PileSynth.csproj" />
+  </ItemGroup>
+
 </Project>
