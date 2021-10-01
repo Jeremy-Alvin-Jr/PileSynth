@@ -11,6 +11,8 @@ namespace PileSynth.Audio
         public static byte ConvertSampleToByte(int sample)
         {
             int result = sample >> 24;
+            if (result < 0)
+                result++;
             result += 128;
             return (byte)result;
         }
@@ -28,6 +30,8 @@ namespace PileSynth.Audio
         public static short ConvertSampleToShort(int sample)
         {
             int result = sample >> 16;
+            if (result < 0)
+                result++;
             return (short)result;
         }
 
