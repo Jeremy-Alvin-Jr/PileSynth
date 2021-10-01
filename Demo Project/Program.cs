@@ -1,4 +1,5 @@
 ﻿using PileSynth;
+using PileSynth.Audio;
 using System;
 
 namespace Demo_Project
@@ -7,8 +8,7 @@ namespace Demo_Project
     {
         static void Main(string[] args)
         {
-            Class1 c = new Class1();
-            Console.WriteLine("test: " + Class1.TestNumber());
+
         }
     }
 }
