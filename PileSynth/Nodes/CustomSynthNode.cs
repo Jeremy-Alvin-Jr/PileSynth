@@ -1,4 +1,5 @@
 ﻿using PileSynth.Nodes.Input;
+using PileSynth.Nodes.Output;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,10 +12,10 @@ namespace PileSynth.Nodes
     {
         public SynthInput Input { get; private set; }
 
-        protected List<CustomSynthNode> ChildNodes = new List<CustomSynthNode>();
+        protected List<SynthOutput> ChildNodes = new List<SynthOutput>();
 
-        private double value;
         private bool calculated = false;
+        private Dictionary<string, double> outputs = new Dictionary<string, double>();
 
         public void Recalculate(SynthInput i)
         {
@@ -25,14 +26,25 @@ namespace PileSynth.Nodes
                 child.Recalculate(i);
             }
         }
-        public double GetValue()
+
+        public double GetOutput(string outputName)
+        {
+            RefreshValues();
+            return outputs[outputName];
+        }
+
+        protected void SetOutput(string outputName, double value)
+        {
+            outputs[outputName] = value;
+        }
+
+        private void RefreshValues()
         {
             if (calculated)
-                return value;
-            value = CalculateNode();
+                return;
+            CalculateOutputs();
             calculated = true;
-            return value;
         }
-        protected abstract double CalculateNode();
+        protected abstract void CalculateOutputs();
     }
 }

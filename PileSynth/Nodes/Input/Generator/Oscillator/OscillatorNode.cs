@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PileSynth.Nodes.Output;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace PileSynth.Nodes.Input.Generator.Oscillator
 {
     public abstract class OscillatorNode : CustomSynthNode
     {
-        public CustomSynthNode Frequency
+        public SynthOutput Frequency
         {
             private get => ChildNodes[0];
             set
@@ -20,21 +21,26 @@ namespace PileSynth.Nodes.Input.Generator.Oscillator
         private double progress = 0;
         private double lastTime = -1;
 
-        protected override double CalculateNode()
+        protected override void CalculateOutputs()
         {
             if (lastTime == -1)
                 lastTime = Input.TimeInSeconds;
-            progress += (Input.TimeInSeconds - lastTime) * Frequency.GetValue();
+            progress += (Input.TimeInSeconds - lastTime) * Frequency.CalculateValue();
             lastTime = Input.TimeInSeconds;
             progress -= (int)(progress);
-            return GenerateValue(progress);
+            SetOutput("output", GenerateValue(progress));
         }
 
         protected abstract double GenerateValue(double time);
 
+        public SynthOutput CreateOutput()
+        {
+            return new SynthOutput(this, "output");
+        }
+
         public OscillatorNode()
         {
-            ChildNodes.Add(new ConstantNode(440));
+            ChildNodes.Add(new ConstantNode(440).CreateOutput());
         }
     }
 }

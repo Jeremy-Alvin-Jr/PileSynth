@@ -19,20 +19,20 @@ namespace Demo_Project
             var output = new MonoOut();
 
             var amplify = new MultiplicativeNode();
-            amplify.AddChildNode(new ConstantNode(int.MaxValue));
+            amplify.AddChildNode(new ConstantNode(int.MaxValue).CreateOutput());
 
             var outOscillator = new SquareOscillator();
             var inOscillator = new SquareOscillator();
-            inOscillator.Frequency = new ConstantNode(105);
-            var modulationConversion = new LinearConversionNode(-1, 1, 350, 440);
-            modulationConversion.PreviousValue = inOscillator;
-            outOscillator.Frequency = modulationConversion;
+            inOscillator.Frequency = new ConstantNode(2).CreateOutput();
+            var modulationConversion = new LinearConversionNode(-1, 1, 100, 440);
+            modulationConversion.PreviousValue = inOscillator.CreateOutput();
+            outOscillator.Frequency = modulationConversion.CreateOutput();
 
-            amplify.AddChildNode(outOscillator);
+            amplify.AddChildNode(outOscillator.CreateOutput());
 
-            output.OutNode = amplify;
+            output.OutNode = amplify.CreateOutput();
             var outStream = new MemoryStream();
-            output.GenerateWavToStream(outStream, 1);
+            output.GenerateWavToStream(outStream, 3);
             new WindowsSoundPlayer(outStream).PlaySync().Dispose();
         }
         

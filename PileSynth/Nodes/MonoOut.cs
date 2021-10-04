@@ -1,5 +1,6 @@
 ﻿using PileSynth.Audio;
 using PileSynth.Nodes.Input;
+using PileSynth.Nodes.Output;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,12 +14,12 @@ namespace PileSynth.Nodes
     {
         public WavEncoder.Settings Settings = new WavEncoder.Settings();
         public SynthInput Input = new SynthInput();
-        public CustomSynthNode OutNode = new ConstantNode();
+        public SynthOutput OutNode = null;
         public int GetSampleAt(double timeInSeconds)
         {
             Input.TimeInSeconds = timeInSeconds;
             OutNode.Recalculate(Input);
-            return (int)OutNode.GetValue();
+            return (int)OutNode.CalculateValue();
         }
 
         public int[] GetAllSamples(double durationInSeconds)

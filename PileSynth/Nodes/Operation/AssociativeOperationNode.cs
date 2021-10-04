@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PileSynth.Nodes.Output;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,21 +9,26 @@ namespace PileSynth.Nodes.Operation
 {
     public abstract class AssociativeOperationNode : CustomSynthNode
     {
-        protected sealed override double CalculateNode()
+        protected sealed override void CalculateOutputs()
         {
             if (ChildNodes.Count == 0)
-                return 0;
-            double total = ChildNodes[0].GetValue();
+                return;
+            double total = ChildNodes[0].CalculateValue();
             for(int i = 1; i < ChildNodes.Count; i++)
             {
-                total = BinaryOperation(total, ChildNodes[i].GetValue());
+                total = BinaryOperation(total, ChildNodes[i].CalculateValue());
             }
-            return total;
+            SetOutput("output", total);
         }
 
-        public void AddChildNode(CustomSynthNode node)
+        public void AddChildNode(SynthOutput node)
         {
             ChildNodes.Add(node);
+        }
+
+        public SynthOutput CreateOutput()
+        {
+            return new SynthOutput(this, "output");
         }
 
         protected abstract double BinaryOperation(double total, double a);
