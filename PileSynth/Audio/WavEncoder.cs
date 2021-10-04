@@ -9,9 +9,13 @@ namespace PileSynth.Audio
 {
     public class WavEncoder
     {
+        public class Settings
+        {
+            public uint SampleRate = 44100;
+            public AudioResolution SampleResolution = AudioResolution.UNSIGNED_8_BIT;
+        }
+        public Settings QualitySettings = new Settings();
         public ushort ChannelsNumber = 2;
-        public uint SampleRate = 44100;
-        public AudioResolution SampleResolution = AudioResolution.UNSIGNED_8_BIT;
 
         private int[] samples;
 
@@ -52,18 +56,18 @@ namespace PileSynth.Audio
         {
             writer.Write((ushort)(1u));
             writer.Write(ChannelsNumber);
-            writer.Write(SampleRate);
-            writer.Write(SampleRate * (ushort)SampleResolution * ChannelsNumber / 8);
-            writer.Write((ushort)((ushort)SampleResolution * ChannelsNumber / 8));
-            writer.Write((ushort)SampleResolution);
+            writer.Write(QualitySettings.SampleRate);
+            writer.Write(QualitySettings.SampleRate * (ushort)QualitySettings.SampleResolution * ChannelsNumber / 8);
+            writer.Write((ushort)((ushort)QualitySettings.SampleResolution * ChannelsNumber / 8));
+            writer.Write((ushort)QualitySettings.SampleResolution);
         }
 
         private void WriteDataChunk(BinaryWriter writer)
         {
-            if(SampleResolution == AudioResolution.UNSIGNED_8_BIT)
+            if(QualitySettings.SampleResolution == AudioResolution.UNSIGNED_8_BIT)
             {
                 writer.Write(BitUtility.ConvertSampleToByteArray(samples));
-            } else if(SampleResolution == AudioResolution.SIGNED_16_BIT)
+            } else if(QualitySettings.SampleResolution == AudioResolution.SIGNED_16_BIT)
             {
                 short[] shortSamples = BitUtility.ConvertSampleToShortArray(samples);
                 byte[] buffer = new byte[shortSamples.Length * 2];
@@ -78,24 +82,6 @@ namespace PileSynth.Audio
             writer.Write((uint)(writer.BaseStream.Length - 8));
             writer.Seek(40, SeekOrigin.Begin);
             writer.Write((uint)(writer.BaseStream.Length - 44));
-        }
-
-        public void CreateCoolSamples(int frequency, double durationInSeconds, int amplitude)
-        {
-            samples = new int[(int)(SampleRate * durationInSeconds)];
-            int changeSoundEvery = (int)(SampleRate / frequency);
-            for(int i = 0; i < samples.Length; i++)
-            {
-                samples[i] = test(i, changeSoundEvery) * amplitude;
-            }
-        }
-
-        private int test(int sampleIndex, int changeSoundEvery)
-        {
-            int result = 1;
-            if (sampleIndex % changeSoundEvery > changeSoundEvery / 2)
-                result = -1;
-            return result;
         }
     }
 }
